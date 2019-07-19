@@ -64,3 +64,110 @@ console.log(str1, arr4)
 // arr change data [ 'f', 'o', 'o' ] aoo
 console.log('arr change data', str1.split(''), arr4.join(''))
 
+//  数字
+// 整数是没有小数的十进制数，小数点后面的0会被省略
+let num1 = 42.0
+let num2 = 42
+console.log(num1, num2) // 42 42
+// 大数字与小数字显示
+let num3 = 5E10
+console.log(num3, num3.toExponential()) // 50000000000 '5e+10'
+let num4 = num3 * num3
+let num5 = 1 / num4
+console.log(num4, num5) // 2.5e+21  4e-22
+// 指定小数部分显示位数
+let num6 = 42.09
+num6.toFixed(0) // "42"
+num6.toFixed(1) // "42.1"
+num6.toFixed(2) // "42.09"
+num6.toFixed(3) // "42.090"
+// 指定有效数位的显示位数
+num6.toPrecision(2) // "42"
+num6.toPrecision(1) // "4e+1"
+num6.toPrecision(3) // "42.1"
+num6.toPrecision(4) // "42.09"
+// 显示时会进行四舍五入，并且位数不够时添 0
+// 转换方法返回的都是字符串
+// 较小的数值
+let sum1 = 0.1 + 0.2
+let num7 = 0.3
+console.log(sum1 == num7) // false
+// 解决办法：判断两个数值是否相等，判断其差值是否小于 2^-52(Number.EPSILON)
+console.log(sum1 - num7 < Math.pow(2, -52)) // true
+console.log(sum1 - num7 < Number.EPSILON)
+// 2^53 - 1 < num < -(2^53 - 1)
+// TODO 整数的安全范围
+// 超过该范围则不精确？
+let num8 = Math.pow(2, 53)
+console.log('num8', num8)
+// 整数判断
+let num9 = 90.12
+let num10 = 90
+console.log(Number.isInteger(num9), Number.isInteger(num10)) // false true
+function isInteger (num) {
+  return typeof num === 'number' && num % 1 === 0
+}
+console.log(isInteger(num9), isInteger(num10)) // false true
+// 判断一个值是否是安全的整数
+console.log(Number.isSafeInteger(Number.MAX_SAFE_INTEGER)) // true
+console.log(Number.isSafeInteger(Math.pow(2, 53))) // false
+console.log(Number.isSafeInteger(Math.pow(2, 53) - 1)) // true
+// TODO 32位有符号整数
+
+// 特殊数值
+// undefined: 指从未赋值
+let a = 'random'
+console.log(void a, void a === undefined) // undefined true
+// 特殊数值
+// NaN: 数学运算的操作数不是数字类型或者无法解析为常规的十进制或者十六进制数字时无法返回一个有效数字，则返回 NaN
+console.log( 1 * 'asd', 1 * '1') // NaN 1
+console.log(Infinity/Infinity) // NaN
+// NaN 是唯一一个不等于自身的值
+console.log(NaN == NaN) // false
+// window.isNaN: 检查NaN、数字或者能否将其转换为数字
+// NaN 返回 true, 能转换为数字，则返回 false
+// window.isNaN('') // false
+// window.isNaN('FASE') // true
+// window.isNaN('0') // false
+// window.isNaN('1') // false
+// window.isNaN(NaN) // true
+// Number.isNaN() 只检查是否为 NaN
+Number.isNaN(NaN) // true
+Number.isNaN(1) // false
+Number.isNaN('FA') //false
+// Number.isNaN() polyfill
+Number.isNaN = function (n) {
+  return (typeof n === 'number' && window.isNaN(n))  || (NaN !== NaN)
+}
+// 无穷数
+// 除法运算中分母为0或者-0, 则结果分别为 Infinity, -Infinity
+console.log(1/0, 1/-0) // Infinity -Infinity
+// 运算结果溢出时结果也会产生为 Infinity
+let b = Number.MAX_VALUE
+console.log(b + b) // Infinity
+console.log(Infinity/Infinity) // NaN: 因为其运算不能转换为数字
+// 零值
+// javascript运算中会产生 -0
+console.log(0/-3) // -0
+function isNegZero (n) {
+  n = Number(n)
+  return (n === 0) && (1/n === -Infinity)
+}
+// 特殊等式
+// NaN与-0在比较的时候有些特别,所以对于它们两个值得判断有些特别
+console.log(NaN !== NaN) // true
+console.log(-0 === 0) // true
+// Object.is()
+Object.is(+0, -0) // false
+Object.is(NaN, NaN) // true
+// Object.is() polyfill
+Object.is =  function (v1, v2) {
+  // 判断-0
+  if (v1 === 0 && v2 === 0) {
+    return 1/v1 === 1/v2
+  } else {
+    // 判断NaN
+    return v1 !== v2
+  }
+  return v1 === v2
+}
