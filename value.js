@@ -135,6 +135,7 @@ console.log(NaN == NaN) // false
 Number.isNaN(NaN) // true
 Number.isNaN(1) // false
 Number.isNaN('FA') //false
+typeof NaN === 'number'
 // Number.isNaN() polyfill
 Number.isNaN = function (n) {
   return (typeof n === 'number' && window.isNaN(n))  || (NaN !== NaN)
@@ -171,3 +172,68 @@ Object.is =  function (v1, v2) {
   }
   return v1 === v2
 }
+
+// 值和引用
+// 基本类型传递的是值得副本，引用类型传递的是地址的副本
+// 由于地址相同，执行的堆中的同一个对象，所以会相互影响
+function foo1 (obj) {
+  console.log('foo1 obj', obj) // [ 'a', 'b', 'c' ]
+  obj.push('new data')
+  // 将局部变量 obj 指向其他地址
+  obj = ['this is a new obj']
+  console.log('after edit', obj) // [ 'this is a new obj' ]
+}
+let obj1= ['a', 'b', 'c']
+foo1(obj1)
+console.log('obj1', obj1) // [ 'a', 'b', 'c', 'new data' ]
+// 想要修改传入其中的值，不能将其变量赋值为一个新的引用
+function foo2(obj) {
+  console.log(obj) // [ 'a' ]
+  // 只是修改本身的值，而非赋值为新的引用
+  obj.length = 0
+  obj.push('1', '2')
+}
+let obj2 = ['a']
+foo2(obj2)
+console.log(obj2) // [ '1', '2' ]
+// 想要函数内部不改变外部的值，传递一个副本进入函数
+let obj4 = ['a', 'b', ['c']]
+function foo5 (obj) {
+  obj.push('d')
+  console.log('foo5', obj) // [ 'a', 'b', [ 'c' ], 'd' ]
+  obj[2][0] = 'edit' // 修改其中包含的引用属性
+}
+foo5(obj4.slice())
+console.log('obj4', obj4) // [ 'a', 'b', [ 'c' ] ]
+// 注意：slice 为浅复制，内部的引用属性值仍然会被修改
+// obj4 [ 'a', 'b', [ 'edit' ] ]
+
+
+// 如果要将基本类型的值传递到函数内并进行更改
+// 则需要将该值封装到一个复合值（对象，数组）中，然后将其通过引用的方式传递
+let obj3 = {
+  a: 'data'
+}
+function foo3 (obj) {
+  obj.a = 'edit a'
+}
+foo3(obj3)
+console.log('obj3', obj3) // obj3 { a: 'edit a' }
+// 如果使用内置包装函数
+let num11 = 12
+let str3 = 'str3'
+function foo4 (num) {
+  num = num + 1
+  console.log('foo num', num)
+}
+let num12 = new Number(num11)
+let num13 = Number(num11)
+let num14 = Object(num11)
+console.log(num12, num13, num14) // Number {12} 12 Number {12}
+foo4(num12) // foo num 13
+console.log(num12) // Number {12}
+foo4(num13) // foo num 13
+console.log(num13) // 12
+foo4(num14) // foo num 13
+console.log(num14) // Number {12}
+// 上面的原因是标量基本类型值是不可更改的（数字，字符串，布尔值）
