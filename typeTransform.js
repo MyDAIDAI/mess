@@ -82,3 +82,41 @@ JSON.stringify(obj2, function (k, v) {
 // "{"a":{"e":"f"},"b":"b","c":{"d":"d"}}"
 
 // space: 用来指定输出的缩进格式, 可以是正整数和字符串
+
+
+// ToNumber
+// true -> 1, false -> 0, null -> 0, undefined -> NaN, NaN -> NaN
+// 对象或者数组会先转换为基本类型值（调用valueOf/toString方法），再转换为数字
+// 由于对象/数组的valueOf返回的都是本身的值(除非自定义 valueOf 方法)，所以最后会调用 toString() 方法
+obj2.valueOf() // {a: {…}, b: "b", c: {…}} 返回本身
+obj2.toString() // "[object Object]"
+Number(obj2.toString()) // NaN
+let arr1 = [1]
+arr1.valueOf() // [1]
+arr1.toString() // "1"
+// 如果为对象和数组自定义了 valueOf 与 toString 方法，那么在转换为数字类型时会先调用 valueOf 方法，
+// 若 valueOf 返回基本类型，则转换为数字，否则，调用 toString 方法
+var a = {
+  valueOf: function () {
+    return '42'
+  },
+  toString: function () {
+    return '41'
+  }
+}
+Number(a) // 42
+var c = [4, 1]
+c.valueOf = function () {
+  return '42'
+}
+c.toString = function () {
+  return '41'
+}
+Number(c) // 42
+// valueOf 返回的不为基本类型，则调用 toString方法
+var d = {
+  toString: function () {
+    return '41'
+  }
+}
+Number(d) // 41
