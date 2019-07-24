@@ -120,3 +120,36 @@ var d = {
   }
 }
 Number(d) // 41
+
+// ToBoolean
+// 假值
+// javaScript 中的值可以被分为两类：
+// 可以被强制转换为 false 的值：undefined, null, NaN, +0, -0, false, ""(注意：Infinity 与 Infinity 会被转换为 true)
+// 其他（被强制转换为 true 的值）: [], [0]
+Boolean(undefined) // false
+Boolean(null) // false
+Boolean(0) // false
+Boolean(-0) // false
+Boolean(NaN) // false
+Boolean('') // false
+Boolean(Infinity) // true
+Boolean(-Infinity) // true
+Boolean([]) // true
+Boolean([0]) // true
+Boolean(new Boolean(false)) // true: new Boolean() 的值为对象，会被强制转化为 true
+Boolean(['']) // true
+// 封装了假值得对象(new Boolean(false), new Number(0), new String('')), 会被强制转换为true
+Boolean(new Boolean(false) && new String("") && new Number(0)) // true
+// 真值: 除了假值以外的值，都是真值
+// 下面是一些容易出错的值
+// 字符串除了空字符串，其他均为真值
+Boolean("false") // true
+Boolean("0") // true
+Boolean("''") // true
+Boolean("") // false
+// 所有的引用类型都为真值
+Boolean([]) // true
+Boolean({}) // true
+Boolean(function () {}) // true
+Boolean(['']) // true
+Boolean([0]) // true
